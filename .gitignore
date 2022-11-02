@@ -1,5 +1,6 @@
 # Logs
 dataset
+dataset_text
 __pycache__/
 *.py[cod]
 *$py.class
