@@ -1,72 +1,104 @@
 import sqlite3
 from datetime import *
 
-con = sqlite3.connect("db.sqlite3")
-cur = con.cursor()
+conn = sqlite3.connect("db.sqlite3")
+conn.row_factory = sqlite3.Row
 
-def createDBTableFiles():
-    try:
-        res = cur.execute("CREATE TABLE files (id text not null primary key, path text, name text, date text)")
-        return True
-    except:
-        return False
 
-def createDBTableResult():
+def createFilesTable(conn):
+    cur = conn.cursor()
     try:
-        res = cur.execute("""CREATE TABLE result (
-            resultid not null text,
-            fileid text,
-            ...
-            unique number text                            #Уникальный номер
-            number_of_gpzu text                           #номер ГПЗУ
-            date_issuance_gpzu                            #Дата выдачи ГПЗУ
-            status_gpzu text                              #Статус ГПЗУ
-            period_validity_gpzu text                     #Срок действия ГПЗУ
-            owner_other_recipient_gpzu text               #Правообладатель или иной получатель ГПЗУ
-            type_owner_recipient_gpzu text                #Тип правообладателя или получателя ГПЗУ
-            administrative_district text                  #Административный округ
-            district_settlement text                      #Район (поселение)
-            construction_address text                     #Строительный адрес
-            cadastral_number_land_plot                    #Кадастровый номер земельного участка (ЗУ)
-            availability_territory_planning_project text  #Наличие проекта планировки территории (ППТ)
-            details_document text                          #Реквизиты документа ППT
-            availability_separate_project_land_gpzu text   #Наличие отдельного проекта межевания территории в границах ГПЗУ 
-            details_document_project_land_survey text      #Реквизиты документа проекта межевания
-            name_conditional_use_group text                #Наименование условной группы использования
-            codes_main_types_permitted_uses text           #Коды основных видов разрешенного использования (ВРИ)
-            area_land_plot_area text                       #Площадь земельногоучастка (ЗУ), кв.м
-            availability_sub_zones_land text               #Наличие подзон ЗУ, номера
-            areas_subzones text                            #Площади подзон ЗУ,  кв.м
-            building_height text                           #Высота застройки
-            number_floors text                             #Количество этажей
-            percentage_builtup_area text                   #Процент застроенности
-            building_density text                          #Плотность застройки
-            purpose_ocs text                               #Назначение ОКС
-            Name_description_ocs text                      #Наименование, описание ОКС
-            presence_objects_planning_regulations_not apply text  #Наличие объектов на которые действие градостроительного регламента не распространяется или не устанавливаеться
-            floor_area_total text                          #Всего
-            floor_area_total_residential_development text  #Жилой застройки
-            floor_area_total_nonresidential_development text  #Нежилой застройки
-            floor_area_total_living_quarters text          #Жилых помещений
-            built_in_attached_freestanding_non_residential_premises
-            ...
-            FOREIGN KEY(fileid) REFERENCES files(artistid)
+        res = cur.execute("""CREATE TABLE files (
+            id INTEGER NOT NULL UNIQUE  PRIMARY KEY,
+            path TEXT NOT NULL,
+            name TEXT NOT NULL,
+            date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
             )""")
         return True
-    except:
+    except Exception as e:
+        # print(e)
         return False
 
 
-def CreateElementDBFiles(files):
-    for i in range(len(files)):
-        cur.execute("insert into files values(" + str(files[i].id) +")")
+def createResultTable(conn):
+    cur = conn.cursor()
+    try:
+        res = cur.execute("""CREATE TABLE result (
+            resultid TEXT NOT NULL,
+            fileid INTEGER NOT NULL UNIQUE,
+            unique_number TEXT,                            '''Уникальный номер'''
+            number_of_gpzu TEXT,                           '''номер ГПЗУ'''
+            date_issuance_gpzu TEXT,                            '''Дата выдачи ГПЗУ'''
+            status_gpzu TEXT ,                             '''Статус ГПЗУ'''
+            period_validity_gpzu TEXT,                  '''Срок действия ГПЗУ'''
+            owner_other_recipient_gpzu TEXT,            '''Правообладатель или иной получатель ГПЗУ'''
+            type_owner_recipient_gpzu TEXT,            '''Тип правообладателя или получателя ГПЗУ'''
+            administrative_district TEXT,                 '''Административный округ'''
+            district_settlement TEXT,                   '''Район (поселение)'''
+            construction_address TEXT,                  '''Строительный адрес'''
+            cadastral_number_land_plot TEXT,                 '''Кадастровый номер земельного участка (ЗУ)'''
+            availability_territory_planning_project TEXT, '''Наличие проекта планировки территории (ППТ)'''
+            details_document TEXT,                          '''Реквизиты документа ППT'''
+            availability_separate_project_land_gpzu TEXT,   '''Наличие отдельного проекта межевания территории в границах ГПЗУ''' 
+            details_document_project_land_survey TEXT,      '''Реквизиты документа проекта межевания'''
+            name_conditional_use_group TEXT,                '''Наименование условной группы использования'''
+            codes_main_types_permitted_uses TEXT,           '''Коды основных видов разрешенного использования (ВРИ)'''
+            area_land_plot_area TEXT,                      '''Площадь земельногоучастка (ЗУ), кв.м'''
+            availability_sub_zones_land TEXT,              '''Наличие подзон ЗУ, номера'''
+            areas_subzones TEXT,                       '''Площади подзон ЗУ,  кв.м'''
+            building_height TEXT,                           '''Высота застройки'''
+            number_floors TEXT,                             '''Количество этажей'''
+            percentage_builtup_area TEXT,                  '''Процент застроенности'''
+            building_density TEXT,                          '''Плотность застройки'''
+            purpose_ocs TEXT,                               '''Назначение ОКС'''
+            Name_description_ocs TEXT,                      '''Наименование, описание ОКС'''
+            presence_objects_planning_regulations_not apply TEXT,  '''Наличие объектов на которые действие градостроительного регламента не распространяется или не устанавливаеться'''
+            floor_area_total TEXT,                         '''Всего'''
+            floor_area_total_residential_development TEXT,  '''Жилой застройки'''
+            floor_area_total_nonresidential_development TEXT,  '''Нежилой застройки'''
+            floor_area_total_living_quarters TEXT,          '''Жилых помещений'''
+            built_in_attached_freestanding_non_residential_premises TEXT,
+            FOREIGN KEY(fileid) REFERENCES files(id) ON DELETE CASCADE
+            )""")
+        return True
+    except Exception as e:
+        # print(e)
+        return False
 
 
-def SelectFileList():
-    for row in cur.execute("SELECT * FROM files"):
-        print(row)
-    
+def insertFiles(cur, files):
+    for file in files:
+        cur.execute("INSERT INTO files (path,name) VALUES(?,?)", (file["path"], file["name"]))
 
-CreateElementDBFiles([{"id": "1", "path": "/user1", "name": "212", "date": "123123"}, {"id": "2", "path": "/user2", "name": "212123", "date": "444123123"}])
-    
-SelectFileList()
+
+def getAllFiles(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM files")
+    return [dict(row) for row in cur.fetchall()]
+
+
+def getAllResults(conn):
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM result")
+    return [dict(row) for row in cur.fetchall()]
+
+
+createFilesTable(conn)
+createResultTable(conn)
+
+cur = conn.cursor()
+cur.execute("begin")
+try:
+    insertFiles(cur, [{"path": "/user1", "name": "212", }, {"path": "/user2", "name": "212123", }])
+    cur.execute("commit")
+except Exception as e:
+    cur.execute("rollback")
+    print("Transaction failed", e)
+
+cur.close()
+
+files = getAllFiles(conn)
+results = getAllResults(conn)
+
+print("Files", files)
+print("Results", results)
