@@ -73,6 +73,7 @@ class MyApp(MDApp):
         self.file_manager = MDFileManager(
             exit_manager=self.exit_manager,
             select_path=self.select_path,
+            selector='multi'
         )
 
     def build(self):
