@@ -5,7 +5,7 @@ Screen:
 
         ScreenManager:
             id: manager
-            name: "PageManager"
+            name: "Manager"
             
             PageUploadFile:
                 name: "PageUploadFile"
@@ -60,16 +60,45 @@ Screen:
                         size_hint_y: None
 
                         MDLabel: 
-                            text: "Меню"
+                            text: "Все файлы"
                             size_hint_y: None
+                        
 
                         ScrollView:
                             MDList:
                                 id: allFileInApp
                     
                     ScrollView:
-    
             
+
+
+            PageResult:
+                name: "PageResult"
+                id: PageResult
+
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    size_hint: (1, 1)
+
+                    MDTopAppBar:
+                        title: "Result"
+                        elevation: 0
+                        left_action_items: [["arrow-left", lambda x: app.result_page_exit_callbak()]]
+                    
+                       
+
+                    BoxLayout:
+                        id: boxResult
+                        orientation: "vertical"
+                        size_hint: 1, 1
+
+
+                    ScrollView:
+
+
+
+
+
 
         MDNavigationDrawer:
             id: nav_drawer
@@ -92,5 +121,10 @@ Screen:
                     text: "Все файлы"
                     size_hint: 0.9, 0.05
                     on_release: manager.current='PageAllFile'
-                    
+                
+                Button:
+                    text: "test result page"
+                    size_hint: 0.9, 0.05
+                    on_release: manager.current='PageResult' 
+                    on_release: app.openPageResult()
                 ScrollView:
