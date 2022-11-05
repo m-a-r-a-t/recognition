@@ -78,6 +78,7 @@ class MyApp(MDApp):
         return Builder.load_file('my.kv')
     
     def file_manager_open(self):
+        self.errorFile = []
         self.arrayPath = []
         self.file_manager.show('/')  
         self.manager_open = True
@@ -116,6 +117,7 @@ class MyApp(MDApp):
 
 
     def result_page_exit_callbak(self, name_page = 'PageAllFile'):
+        self.openPageAllFile()
         self.root.ids.manager.current = name_page
 
 
@@ -244,6 +246,7 @@ class MyApp(MDApp):
 
 
     def openPageAllFile(self):
+        self.root.ids.containerAllFileList.clear_widgets()
         files = self.useDbInAllFilePage()
         for file in files:
             id = str(file.id)
