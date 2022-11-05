@@ -21,8 +21,6 @@ from kivymd.uix.button import MDRaisedButton
 
 
 
-
-
 Window.size = (720, 1024)
 
 
@@ -43,14 +41,6 @@ class PageResult(Screen):
 class ContentNavigationDrawer(MDBoxLayout):
     pass
 
-class MyGrid(GridLayout):
-    def __init__(self, **kwargs):
-        super(MyGrid, self).__init__(**kwargs)
-        self.rows = 1
-        self.size_hint = (1, 1)
-        # self.size_x = 100000
-        # self.size_y = 100000
-        self.bind(minimum_width=self.setter('width'))
 
 
 class MyBox(BoxLayout):
@@ -80,19 +70,20 @@ class MyApp(MDApp):
         return Builder.load_file('my.kv')
     
     def file_manager_open(self):
-        self.file_manager.show('/')  # output manager to the screen
+        self.file_manager.show('/')  
         self.manager_open = True
 
     def select_path(self, path):
-        self.arrayPath.append(path)
+        self.arrayPath = path
         print(path)
-        toast(path)
+       
 
     def exit_manager(self, *args):
         self.manager_open = False
         self.file_manager.close()
         print(self.arrayPath)
         self.afterExitManagerFile()
+        
 
     def afterExitManagerFile(self):
         for i in range(len(self.arrayPath)):
