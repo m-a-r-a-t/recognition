@@ -128,7 +128,7 @@ class MyApp(MDApp):
         db2 = USE_DB()
         p = GPZU_parser(files_paths=self.arrayPath)
         data = p.parse()
-        print(data)
+        # print(data)
         
         for file_path,result in data.items():
             file = File(file_path, result)
@@ -149,6 +149,7 @@ class MyApp(MDApp):
     def callbackPressOnAllFileItem(self, instance):
         self.openPageResult(self.getTableToResultOnPressItemALLFile(instance.id))
         self.root.ids.manager.current = 'PageResult'
+        self.arrayPath = [instance.path]
 
     def result_page_exit_callbak(self, name_page = 'PageAllFile'):
         self.openPageAllFile()
@@ -283,12 +284,18 @@ class MyApp(MDApp):
         scroll.add_widget(box)
         base.add_widget(scroll)
         self.root.ids.boxResult.add_widget(base)
+    
+
+    def exportFile():
+        pass
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         if keyboard in (1001, 27):
             if self.manager_open:
                 self.file_manager.back()
         return True
+    
+    
 
 
 MyApp().run()
