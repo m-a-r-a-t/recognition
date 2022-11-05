@@ -62,26 +62,40 @@ class USE_DB:
         return File(path=data["path"], result=json.loads(data["data"]), id=data["id"], date=data["date"])
 
 
-if __name__ == "__main__":
-    db = USE_DB()
+# if __name__ == "__main__":
+#     db = USE_DB()
 
-    result = {  # Результат полученный из гпзу то есть 1 объект \\ GPZU_parser.parse() возвращает объект объектов от туда нужен один
-        "Номер гпзу": "e2324234",
-        "что-то из гпзу": "ававы"
-    }
+#     data = db.getAllFilesWithResults();
+#     for file in data:
+#         print('========================================================')
+#         print(file.id)
+#         print(file.path)
+#         print(file.date)
+#         print(file.name)
+#         print(file.result)
 
-    file = File('/fsdfds/gpzu.pdf', result,)
-    db.insertElementFile([file])  # cюда уже передаем массив файлов
-    data = db.getAllFilesWithResults()
-    # file
-    for file in data:
-        print('========================================================')
-        print(file.id)
-        print(file.path)
-        print(file.date)
-        print(file.name)
-        print(file.result)
+    # p = GPZU_parser(files_paths=['test/parser/RU77101000-040954-GPZU.pdf'])
 
-    one_row = db.getOneFileById(1)  # получение одной гпзу
+    # data = p.parse()
 
-    print(one_row)
+    # arrayKeys = data.keys()
+    # x = data.get(list(arrayKeys)[0])
+    # print(x)
+
+    # result = x
+
+    # file = File('/Users/egormuhaev/Desktop/app-pithon/test/parser/RU77101000-040954-GPZU.pdf', result,)
+    # print(db.insertElementFile([file]))  # cюда уже передаем массив файлов
+    # data = db.getAllFilesWithResults()
+    # # file
+    # for file in data:
+    #     print('========================================================')
+    #     print(file.id)
+    #     print(file.path)
+    #     print(file.date)
+    #     print(file.name)
+    #     print(file.result)
+
+    # one_row = db.getOneFileById(1)  # получение одной гпзу
+
+    # print(one_row)

@@ -16,10 +16,10 @@ from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivymd.uix.widget import Widget
 from kivymd.uix.label import MDLabel
-from test.parser.parser import GPZU_parser
+from parser.parser import GPZU_parser
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.list import OneLineListItem
-from model import *
+from app.db.model import *
 
 
 
@@ -130,16 +130,17 @@ class MyApp(MDApp):
         return resultData
       
     def saveFileInDb(self):
+        files = []
         db2 = USE_DB()
-        for i in range(len(self.arrayPath)):
-            p = GPZU_parser(files_paths=[self.arrayPath[i]])
-            data = p.parse()
-            arrayKeys = data.keys()
-            result = data.get(list(arrayKeys)[0])
-            file = File(self.arrayPath[i], result)
-            print(1)
-            print(file.name)
-            db2.insertElementFile([file])
+        p = GPZU_parser(files_paths=self.arrayPath)
+        data = p.parse()
+        print(data)
+        
+        for file_path,result in data.items():
+            file = File(file_path, result)
+            files.append(file)
+        
+        db2.insertElementFile(files)
 
 
     def getTableToResultAfterUpload(self):
