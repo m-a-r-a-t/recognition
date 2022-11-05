@@ -16,7 +16,7 @@ from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivymd.uix.widget import Widget
 from kivymd.uix.label import MDLabel
-from parser.parser import GPZU_parser
+from gpzu_parser.gpzu_parser import GPZU_parser
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.list import OneLineListItem
 from app.db.model import *
