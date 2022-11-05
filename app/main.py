@@ -19,7 +19,8 @@ from kivymd.uix.label import MDLabel
 from test.parser.parser import GPZU_parser
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.list import OneLineListItem
-import uuid
+from model import *
+
 
 
 
@@ -46,11 +47,6 @@ class ContentNavigationDrawer(MDBoxLayout):
     pass
 
 
-class File:
-    def __init__(self, path, dataResult):
-        self.path = path
-        self.file_name = self.path.split('/')[len(self.path.split('/'))-1]
-        self.id = uuid.uuid4()
     
     
 class MyBox(BoxLayout):
@@ -69,6 +65,7 @@ class MyApp(MDApp):
         super().__init__(**kwargs)
         self.arrayPath=[]
         self.errorFile=[]
+        self.db = USE_DB()
         Window.bind(on_keyboard=self.events)
         self.manager_open = False
         self.file_manager = MDFileManager(
@@ -111,36 +108,106 @@ class MyApp(MDApp):
 
         self.edit_arrayPath_of_error()
 
+
     def edit_arrayPath_of_error(self):
         for i in range(len(self.errorFile)):
             self.arrayPath.remove(self.errorFile[i])
+        self.saveFileInDb()
 
 
     def result_page_exit_callbak(self, name_page = 'PageAllFile'):
         self.root.ids.manager.current = name_page
 
 
-    # def use_db_to_upload(self):
-    #     for i in range(len(self.arrayPath)):
-    #         conn = sqlite3.connect("db.sqlite3")
-    #         conn.row_factory = sqlite3.Row
-    #         p = GPZU_parser(files_paths=[self.arrayPath[i]])
-    #         c = File(self.arrayPath[i])
-    #         createFilesTable(conn)
-    #         files = [{"path": str(c.path), "name": str(c.file_name), "id": str(c.id)}]
-    #         cur = conn.cursor()
-    #         cur.execute("begin")
-    #         try:
-    #             insertFiles(cur, files=files)
-    #             cur.execute("commit")
-    #         except Exception as e:
-    #             cur.execute("rollback")
-    #             print("Transaction failed", e)
+    def openPageResultAfterUpload(self):
+        self.openPageResult(self.getTableResult())
+        self.root.ids.manager.current = 'PageResult'
+
+    
+
+    def useDbInAllFilePage(self):
+        resultData = self.db.getAllFilesWithResults()
+        return resultData
+      
+    def saveFileInDb(self):
+        db2 = USE_DB()
+        for i in range(len(self.arrayPath)):
+            p = GPZU_parser(files_paths=[self.arrayPath[i]])
+            data = p.parse()
+            arrayKeys = data.keys()
+            result = data.get(list(arrayKeys)[0])
+            file = File(self.arrayPath[i], result)
+            print(1)
+            print(file.name)
+            db2.insertElementFile([file])
 
 
+    def getTableToResultAfterUpload(self):
+        listColumn = []
+        rowData = []
+        arrayLocalFileID = []
+        data = self.db.getAllFilesWithResults()
+        for file in data: 
+            for i in range(len(self.arrayPath)):
+                if(self.arrayPath[i] == file.path):
+                    arrayLocalFileID.append[file.id]
+        
 
+        for i in range(len(arrayLocalFileID)):
+            data = self.db.getOneFileById(arrayLocalFileID[i])
+            dataKeys = data.result.keys()
+            nameColumn = list(dataKeys)
+            if len(listColumn) == 0:
+                for j in range(len(nameColumn)):
+                    listColumn.append((nameColumn[j], dp(100)))
 
+          
+            row = []
+            for g in range(len(nameColumn)):
+                row.append(data.result.get(nameColumn[g]))
+            rowData.append(tuple(row))
+        
+        print(listColumn)
+        print(rowData)
+        
+        data_tables = MDDataTable(
+            rows_num=100,
+            use_pagination=True,
+            column_data=listColumn,
+            row_data=rowData,
+            # sorted_on="Schedule",
+            sorted_order="ASC",
+            elevation=2,
+        )
+        return data_tables
+      
+                
+    def getTableToResultOnPressItemALLFile(self, id):
+        data = self.db.getOneFileById(id)
+        listColumn = []
+        rowData = []
+        dataKeys = data.result.keys()
+        nameColumn = list(dataKeys)
+        if len(listColumn) == 0:
+                for j in range(len(nameColumn)):
+                    listColumn.append((nameColumn[j], dp(100)))
+        row = []
+        for g in range(len(nameColumn)):
+            row.append(data.result.get(nameColumn[g]))
+        rowData.append(tuple(row))
 
+        data_tables = MDDataTable(
+            rows_num=100,
+            use_pagination=True,
+            column_data=listColumn,
+            row_data=rowData,
+            # sorted_on="Schedule",
+            sorted_order="ASC",
+            elevation=2,
+        )
+        return data_tables
+
+      
     def getTableResult(self):
         listColumn = []
         rowData = []
@@ -173,36 +240,44 @@ class MyApp(MDApp):
         )
         return data_tables
 
+
+
     def openPageAllFile(self):
-        #запрос в бд
-        arrayDB = [{"id": "#1122", "name": "file1", "path": "/user/asa", "data": "12/12/12"}]
-        for i in range(20):
+        files = self.useDbInAllFilePage()
+        for file in files:
+            id = str(file.id)
             self.root.ids.containerAllFileList.add_widget(
-               ThreeLineListItem(text=f"Название фала: {1}", secondary_text=f"Путь к файлу: {1}", tertiary_text=f"Статус: {1}")
+                ThreeLineListItem(
+                    id=id,
+                    text=f"Название фала: {file.name}", 
+                    secondary_text=f"Путь к файлу: {file.path}", 
+                    tertiary_text=f"Дата: {file.date}", 
+                    on_release=self.callbackPressOnAllFileItem,
+                    )
             )
 
-    
 
-    def openPageResult(self):
+
+
+    def callbackPressOnAllFileItem(self, instance):
+        self.openPageResult(self.getTableToResultOnPressItemALLFile(instance.id))
+        self.root.ids.manager.current = 'PageResult'
+       
+        
+    
+    
+    def openPageResult(self, data_table):
         self.root.ids.boxResult.clear_widgets()
         base = FloatLayout(
             size_hint = (1, 1)
         )  
-        button_box = MDBoxLayout(
-            pos_hint={"center_x": 0.5, 'top': 0},
-            adaptive_size=True,
-            padding="24dp",
-            spacing="24dp",
-        )
-        # button_box.add_widget(MDRaisedButton(text="export"))
         box = MyBox()
         box.add_widget(Widget(size_hint_y=0))
         box.add_widget(Widget(size_hint_y=0))
-        box.add_widget(self.getTableResult())
+        box.add_widget(data_table)
         scroll = ScrollView(do_scroll_y=False, pos_hint={"center_y": .5})
         scroll.add_widget(box)
         base.add_widget(scroll)
-        # base.add_widget(button_box)
         self.root.ids.boxResult.add_widget(base)
 
 

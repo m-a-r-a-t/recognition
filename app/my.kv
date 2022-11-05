@@ -38,7 +38,7 @@ Screen:
                             icon: "file"
                             pos_hint: {'left': 0.6}
                             on_release: manager.current='PageResult' 
-                            on_release: app.openPageResult()
+                            on_release: app.openPageResultAfterUpload()
                           
                     
                     BoxLayout: 
@@ -99,4 +99,43 @@ Screen:
                         id: boxResult
                         orientation: "vertical"
                         size_hint: 1, 0.9
+                    
+
+
+                
+
+
+
+
+
+
+        MDNavigationDrawer:
+            id: nav_drawer
+
+            ContentNavigationDrawer:
+                spacing: '8dp'
+                padding: '8dp'
+                orientation: "vertical"
+                
+                MDLabel: 
+                    text: "Меню"
+                    size_hint_y: None
+
+                Button:
+                    text: "Загрузить файлы"
+                    size_hint: 0.9, 0.05
+                    on_release: manager.current='PageUploadFile'
+                
+                Button:
+                    text: "Все файлы"
+                    size_hint: 0.9, 0.05
+                    on_release: app.openPageAllFile()
+                    on_release: manager.current='PageAllFile'
+                
+                Button:
+                    text: "test result page"
+                    size_hint: 0.9, 0.05
+                    on_release: manager.current='PageResult' 
+                    on_release: app.openPageResultAfterUpload()
+                ScrollView:
                     
