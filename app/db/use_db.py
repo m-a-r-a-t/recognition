@@ -25,7 +25,8 @@ def createResultTable(conn):
     try:
         res = cur.execute("""CREATE TABLE result (
             resultid TEXT NOT NULL,
-            fileid INTEGER NOT NULL UNIQUE,
+            fileid TEXT NOT NULL UNIQUE,
+            nn_number TEXT 
             unique_number TEXT,                            '''Уникальный номер'''
             number_of_gpzu TEXT,                           '''номер ГПЗУ'''
             date_issuance_gpzu TEXT,                            '''Дата выдачи ГПЗУ'''
@@ -53,11 +54,41 @@ def createResultTable(conn):
             purpose_ocs TEXT,                               '''Назначение ОКС'''
             Name_description_ocs TEXT,                      '''Наименование, описание ОКС'''
             presence_objects_planning_regulations_not apply TEXT,  '''Наличие объектов на которые действие градостроительного регламента не распространяется или не устанавливаеться'''
-            floor_area_total TEXT,                         '''Всего'''
-            floor_area_total_residential_development TEXT,  '''Жилой застройки'''
-            floor_area_total_nonresidential_development TEXT,  '''Нежилой застройки'''
-            floor_area_total_living_quarters TEXT,          '''Жилых помещений'''
-            built_in_attached_freestanding_non_residential_premises TEXT,
+            28 TEXT
+            29 TEXT
+            30 TEXT 
+            31 TEXT
+            32 TEXT
+            33 TEXT
+            34 TEXT
+            35 TEXT
+            36 TEXT
+            37 TEXT
+            38 TEXT
+            39 TEXT
+            40 TEXT
+            41 TEXT
+            42 TEXT
+            43 TEXT
+            44 TEXT
+            45 TEXT
+            46 TEXT
+            47 TEXT
+            48 TEXT
+            49 TEXT 
+            50 TEXT
+            51 TEXT
+            52 TEXT
+            53 TEXT
+            54 TEXT
+            55 TEXT
+            56 TEXT
+            57 TEXT
+            58 TEXT
+            59 TEXT
+            60 TEXT
+            61 TEXT
+            62 TEXT
             FOREIGN KEY(fileid) REFERENCES files(id) ON DELETE CASCADE
             )""")
         return True
