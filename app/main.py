@@ -58,6 +58,7 @@ class MyApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.arrayPath=[]
+        self.errorFile=[]
         Window.bind(on_keyboard=self.events)
         self.manager_open = False
         self.file_manager = MDFileManager(
@@ -70,6 +71,7 @@ class MyApp(MDApp):
         return Builder.load_file('my.kv')
     
     def file_manager_open(self):
+        self.arrayPath = []
         self.file_manager.show('/')  
         self.manager_open = True
 
@@ -83,19 +85,31 @@ class MyApp(MDApp):
         self.file_manager.close()
         print(self.arrayPath)
         self.afterExitManagerFile()
-        
+         
 
     def afterExitManagerFile(self):
         for i in range(len(self.arrayPath)):
+            self.file_name = self.arrayPath[i].split('/')[len(self.arrayPath[i].split('/'))-1]
+            if (self.file_name.split('.')[len(self.file_name.split('.'))-1]) != "pdf":
+                self.status = f"[color=ff0000]Данный формат {(self.file_name.split('.')[len(self.file_name.split('.'))-1])} не поддерживается"
+                self.errorFile.append(self.arrayPath[i])
+            else:
+                self.status = f'Файл загружен'
             self.root.ids.pathUploadFileList.add_widget(
-                ThreeLineListItem(text=f"File: {i}", secondary_text=f"Path: {self.arrayPath[i]}", tertiary_text=f"status: false")
+                ThreeLineListItem(text=f"Название фала: {self.file_name}", secondary_text=f"Путь к файлу: {self.arrayPath[i]}", tertiary_text=f"Статус: {self.status}")
             )
+
+        self.edit_arrayPath_of_error()
+
+    def edit_arrayPath_of_error(self):
+        for i in range(len(self.errorFile)):
+            self.arrayPath.remove(self.errorFile[i])
+
 
     def result_page_exit_callbak(self, name_page = 'PageAllFile'):
         self.root.ids.manager.current = name_page
 
     def getTableResult(self):
-
         listColumn = []
         rowData = []
         
@@ -105,14 +119,15 @@ class MyApp(MDApp):
             dataKeys = data.keys()
             nameColumn = list(data.get(list(dataKeys)[0]).keys())
             if len(listColumn) == 0:
-                for i in range(len(nameColumn)):
-                    listColumn.append((nameColumn[i], dp(100)))
+                for j in range(len(nameColumn)):
+                    listColumn.append((nameColumn[j], dp(100)))
             
-            for i in range(len(data)):
-                row = [str(i), list(dataKeys)[i]]
-                for g in range(len(nameColumn)-2):
-                    row.append(data.get(list(dataKeys)[i]).get(nameColumn[g+2]))
+            for g in range(len(data)):
+                row = [self.arrayPath[i].split('/')[len(self.arrayPath[i].split('/'))-1], list(dataKeys)[g]]
+                for c in range(len(nameColumn)-2):
+                    row.append(data.get(list(dataKeys)[g]).get(nameColumn[c+2]))
                 rowData.append(tuple(row))
+                break
             
 
         data_tables = MDDataTable(
