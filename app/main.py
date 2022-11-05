@@ -18,6 +18,10 @@ from kivymd.uix.widget import Widget
 from kivymd.uix.label import MDLabel
 from test.parser.parser import GPZU_parser
 from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.list import OneLineListItem
+import uuid
+
+
 
 
 
@@ -42,7 +46,13 @@ class ContentNavigationDrawer(MDBoxLayout):
     pass
 
 
-
+class File:
+    def __init__(self, path, dataResult):
+        self.path = path
+        self.file_name = self.path.split('/')[len(self.path.split('/'))-1]
+        self.id = uuid.uuid4()
+    
+    
 class MyBox(BoxLayout):
     def __init__(self, **kwargs):
         super(MyBox, self).__init__(**kwargs)
@@ -109,6 +119,28 @@ class MyApp(MDApp):
     def result_page_exit_callbak(self, name_page = 'PageAllFile'):
         self.root.ids.manager.current = name_page
 
+
+    # def use_db_to_upload(self):
+    #     for i in range(len(self.arrayPath)):
+    #         conn = sqlite3.connect("db.sqlite3")
+    #         conn.row_factory = sqlite3.Row
+    #         p = GPZU_parser(files_paths=[self.arrayPath[i]])
+    #         c = File(self.arrayPath[i])
+    #         createFilesTable(conn)
+    #         files = [{"path": str(c.path), "name": str(c.file_name), "id": str(c.id)}]
+    #         cur = conn.cursor()
+    #         cur.execute("begin")
+    #         try:
+    #             insertFiles(cur, files=files)
+    #             cur.execute("commit")
+    #         except Exception as e:
+    #             cur.execute("rollback")
+    #             print("Transaction failed", e)
+
+
+
+
+
     def getTableResult(self):
         listColumn = []
         rowData = []
@@ -141,6 +173,14 @@ class MyApp(MDApp):
         )
         return data_tables
 
+    def openPageAllFile(self):
+        #запрос в бд
+        arrayDB = [{"id": "#1122", "name": "file1", "path": "/user/asa", "data": "12/12/12"}]
+        for i in range(20):
+            self.root.ids.containerAllFileList.add_widget(
+               ThreeLineListItem(text=f"Название фала: {1}", secondary_text=f"Путь к файлу: {1}", tertiary_text=f"Статус: {1}")
+            )
+
     
 
     def openPageResult(self):
@@ -154,7 +194,7 @@ class MyApp(MDApp):
             padding="24dp",
             spacing="24dp",
         )
-        button_box.add_widget(MDRaisedButton(text="export"))
+        # button_box.add_widget(MDRaisedButton(text="export"))
         box = MyBox()
         box.add_widget(Widget(size_hint_y=0))
         box.add_widget(Widget(size_hint_y=0))
@@ -162,8 +202,7 @@ class MyApp(MDApp):
         scroll = ScrollView(do_scroll_y=False, pos_hint={"center_y": .5})
         scroll.add_widget(box)
         base.add_widget(scroll)
-        base.add_widget(ScrollView())
-        base.add_widget(button_box)
+        # base.add_widget(button_box)
         self.root.ids.boxResult.add_widget(base)
 
 
