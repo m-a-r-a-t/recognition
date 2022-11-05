@@ -1,54 +1,87 @@
-from db.use_db import *
+from typing import List, Optional
 import uuid
 import sqlite3
-from test.parser.parser import GPZU_parser
-
-
-
-class Result:
-    def __init__(self, fileId, filePath):
-        self.result_id = uuid.uuid4()
-        self.file_id = fileId
-        self.result_data = self.dataResultConvert(filePath)
-        pass
-
-    def dataResultConvert(self, filePath):
-        p = GPZU_parser(files_paths=[filePath])
-        data = p.parse()
-        return data.get(list(data.keys())[0])
+import json
 
 
 class File:
-    def __init__(self, path):
+    def __init__(self, path,  result, id=0,  date='',):
+        self.id = id
         self.path = path
-        self.file_name = self.path.split('/')[len(self.path.split('/'))-1]
-        self.id = uuid.uuid4()
+        self.name = path.split('/')[len(path.split('/'))-1]
+        self.date = date
+
+        self.result = result
 
 
 class USE_DB:
-    def __init__(self, filePath, Result):
-        self.file = File(filePath)
-        self.Result = Result(self.file.id, self.file.path)
-        pass 
+    def __init__(self):
+        self.__conn = sqlite3.connect("db.sqlite3")
+        self.__conn.row_factory = sqlite3.Row
+        self.__createTableFile()
 
-    def CreateTableFile(self):
-            pass
-    
-    def CreateTableResult(self):
-        pass
+    def __createTableFile(self):
+        cur = self.__conn.cursor()
+        try:
+            res = cur.execute("""CREATE TABLE files (
+                id INTEGER NOT NULL UNIQUE  PRIMARY KEY,
+                path TEXT NOT NULL,
+                name TEXT NOT NULL,
+                date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                data TEXT NOT NULL
+                )""")
 
-    
-    def InsertElementFile(self):
-        #insertFiletable
-        #insertResult
-        pass
+            print('Table files created')
+        except Exception as e:
+            print("[INFO]", e)
+
+    def insertElementFile(self, files: List[File]):
+        cur = self.__conn.cursor()
+        cur.execute("begin")
+        try:
+            for file in files:
+                cur.execute("INSERT INTO files (path,name,data) VALUES(?,?,?)", (file.path, file.name, json.dumps(file.result)))
+
+            cur.execute("commit")
+        except Exception as e:
+            cur.execute("rollback")
+            print("Transaction failed", e)
+        finally:
+            cur.close()
+
+    def getAllFilesWithResults(self,):
+        cur = self.__conn.cursor()
+        cur.execute("SELECT * FROM files")
+        data = [dict(row) for row in cur.fetchall()]
+        return [File(path=d["path"], result=json.loads(d["data"]), id=d["id"], date=d["date"]) for d in data]
+
+    def getOneFileById(self, idd: int):
+        cur = self.__conn.cursor()
+        cur.execute("SELECT * FROM files WHERE id=?", (idd,))
+        data = dict(cur.fetchone())
+        return File(path=data["path"], result=json.loads(data["data"]), id=data["id"], date=data["date"])
 
 
+if __name__ == "__main__":
+    db = USE_DB()
 
-#Эти методы вне класса
+    result = {  # Результат полученный из гпзу то есть 1 объект \\ GPZU_parser.parse() возвращает объект объектов от туда нужен один
+        "Номер гпзу": "e2324234",
+        "что-то из гпзу": "ававы"
+    }
 
-def SelectInFileAll():
-    pass
+    file = File('/fsdfds/gpzu.pdf', result,)
+    db.insertElementFile([file])  # cюда уже передаем массив файлов
+    data = db.getAllFilesWithResults()
+    # file
+    for file in data:
+        print('========================================================')
+        print(file.id)
+        print(file.path)
+        print(file.date)
+        print(file.name)
+        print(file.result)
 
-def SelectInResultById():
-    pass
+    one_row = db.getOneFileById(1)  # получение одной гпзу
+
+    print(one_row)
