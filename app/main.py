@@ -26,9 +26,6 @@ from kivy.properties import ListProperty
 
 
 
-
-
-
 Window.size = (720, 1024)
 
 
@@ -200,7 +197,7 @@ class MyApp(MDApp):
             nameColumn = list(dataKeys)
             if len(listColumn) == 0:
                 for j in range(len(nameColumn)):
-                    listColumn.append((nameColumn[j], dp(150)))
+                    listColumn.append((nameColumn[j], dp(80)))
 
             row = []
             for g in range(len(nameColumn)):
@@ -229,7 +226,7 @@ class MyApp(MDApp):
         nameColumn = list(dataKeys)
         if len(listColumn) == 0:
                 for j in range(len(nameColumn)):
-                    listColumn.append((nameColumn[j], dp(150)))
+                    listColumn.append((nameColumn[j], dp(80)))
         row = []
         for g in range(len(nameColumn)):
             row.append(data.result.get(nameColumn[g]))
@@ -257,7 +254,7 @@ class MyApp(MDApp):
             nameColumn = list(data.get(list(dataKeys)[0]).keys())
             if len(listColumn) == 0:
                 for j in range(len(nameColumn)):
-                    listColumn.append((nameColumn[j], dp(150)))
+                    listColumn.append((nameColumn[j], dp(80)))
             
             for g in range(len(data)):
                 row = [self.arrayPath[i].split('/')[len(self.arrayPath[i].split('/'))-1], list(dataKeys)[g]]
