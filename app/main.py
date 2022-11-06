@@ -137,7 +137,7 @@ class MyApp(MDApp):
                 file = File(file_path,name,result)
                 files.append(file)
         
-        db2.insertElementFile(files)
+        print(db2.insertElementFile(files))
 
     # Subprocces after load pages and callbacks
     def callbackOpenPageExport(self):
@@ -160,7 +160,7 @@ class MyApp(MDApp):
         self.root.ids.manager.current = name_page
 
     def openPageResultAfterUpload(self):
-        self.openPageResult(self.getTableResult())
+        self.openPageResult(self.getTableToResultAfterUpload())
         self.root.ids.manager.current = 'PageResult'
         self.arrayExport = self.arrayPath
     
@@ -191,7 +191,7 @@ class MyApp(MDApp):
         for file in data: 
             for i in range(len(self.arrayPath)):
                 if(self.arrayPath[i] == file.path):
-                    arrayLocalFileID.append[file.id]
+                    arrayLocalFileID.append(file.id)
         
         for i in range(len(arrayLocalFileID)):
             data = self.db.getOneFileById(arrayLocalFileID[i])
@@ -199,18 +199,18 @@ class MyApp(MDApp):
             nameColumn = list(dataKeys)
             if len(listColumn) == 0:
                 for j in range(len(nameColumn)):
-                    listColumn.append((nameColumn[j], dp(80)))
+                    if j == 6:
+                        listColumn.append((nameColumn[j], dp(150)))
+                    else:
+                        listColumn.append((nameColumn[j], dp(90)))
 
             row = []
             for g in range(len(nameColumn)):
                 row.append(data.result.get(nameColumn[g]))
             rowData.append(tuple(row))
         
-        print(listColumn)
-        print(rowData)
-        
         data_tables = MDDataTable(
-            rows_num=100,
+            rows_num=10,
             use_pagination=True,
             column_data=listColumn,
             row_data=rowData,
@@ -244,38 +244,11 @@ class MyApp(MDApp):
             elevation=2,
         )
         return data_tables
+ 
 
-    def getTableResult(self):
-        listColumn = []
-        rowData = []
-        
-        for i in range(len(self.arrayPath)):
-            p = GPZU_parser(files_paths=[self.arrayPath[i]])
-            data = p.parse()
-            dataKeys = data.keys()
-            nameColumn = list(data.get(list(dataKeys)[0]).keys())
-            if len(listColumn) == 0:
-                for j in range(len(nameColumn)):
-                    listColumn.append((nameColumn[j], dp(80)))
-            
-            for g in range(len(data)):
-                row = [self.arrayPath[i].split('/')[len(self.arrayPath[i].split('/'))-1], list(dataKeys)[g]]
-                for c in range(len(nameColumn)-2):
-                    row.append(data.get(list(dataKeys)[g]).get(nameColumn[c+2]))
-                rowData.append(tuple(row))
-                break
-            
-        data_tables = MDDataTable(
-            rows_num=100,
-            use_pagination=True,
-            column_data=listColumn,
-            row_data=rowData,
-            # sorted_on="Schedule",
-            sorted_order="ASC",
-            elevation=2,
-        )
-        return data_tables    
-    
+
+
+
     def openPageResult(self, data_table):
         self.root.ids.boxResult.clear_widgets()
         base = FloatLayout(
