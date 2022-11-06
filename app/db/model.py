@@ -59,7 +59,7 @@ class USE_DB:
         cur = self.__conn.cursor()
         cur.execute("SELECT * FROM files WHERE id=?", (idd,))
         data = dict(cur.fetchone())
-        return File(path=data["path"],name=d["name"], result=json.loads(data["data"]), id=data["id"], date=data["date"])
+        return File(path=data["path"],name=data["name"], result=json.loads(data["data"]), id=data["id"], date=data["date"])
 
 
 # if __name__ == "__main__":
