@@ -20,6 +20,9 @@ from gpzu_parser.gpzu_parser import GPZU_parser
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.list import OneLineListItem
 from app.db.model import *
+from plyer import filechooser
+from uuid import *
+from kivy.properties import ListProperty
 
 
 
@@ -87,6 +90,7 @@ class MyApp(MDApp):
     # Файл менеджер
 
     def file_manager_open(self):
+        self.arrayExport = []
         self.errorFile = []
         self.arrayPath = []
         self.file_manager.show('/')  
@@ -149,7 +153,8 @@ class MyApp(MDApp):
     def callbackPressOnAllFileItem(self, instance):
         self.openPageResult(self.getTableToResultOnPressItemALLFile(instance.id))
         self.root.ids.manager.current = 'PageResult'
-        self.arrayPath = [instance.path]
+        data = self.db.getOneFileById(instance.id)
+        self.arrayExport = [data.path]
 
     def result_page_exit_callbak(self, name_page = 'PageAllFile'):
         self.openPageAllFile()
@@ -158,6 +163,7 @@ class MyApp(MDApp):
     def openPageResultAfterUpload(self):
         self.openPageResult(self.getTableResult())
         self.root.ids.manager.current = 'PageResult'
+        self.arrayExport = self.arrayPath
     
     def openPageAllFile(self):
         self.root.ids.containerAllFileList.clear_widgets()
@@ -284,18 +290,21 @@ class MyApp(MDApp):
         scroll.add_widget(box)
         base.add_widget(scroll)
         self.root.ids.boxResult.add_widget(base)
-    
+ 
 
-    def exportFile():
-        pass
+    def exportFile(self):
+        exp = GPZU_parser(files_paths=self.arrayExport)
+        exp.parse()
+        folder_path = filechooser.choose_dir()
+        exp.to_excel(str(folder_path[0]), "file_"+str(uuid.uuid4()))
+        self.arrayExport = []
+      
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         if keyboard in (1001, 27):
             if self.manager_open:
-                self.file_manager.back()
+                self.file_manager.back(on_selection=self.handle_selection)
         return True
     
-    
-
 
 MyApp().run()

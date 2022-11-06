@@ -225,6 +225,7 @@ class GPZU_parser:
                 now_number = self.__parse_number(text)
 
                 self.results[path] = self.__parse_pdf(text)
+#
                 # if now_number:
                 #     zu_names, zu_keys = self.__parse_count(text)
                 #     if len(zu_names) > 0:

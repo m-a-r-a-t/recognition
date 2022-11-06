@@ -91,7 +91,7 @@ Screen:
                         elevation: 0
                         left_action_items: [["arrow-left", lambda x: app.result_page_exit_callbak()]]
                         right_action_items:
-                            [['export', lambda x: app.callbackOpenPageExport(), "Экспорт в xls"]]
+                            [['export', lambda x: app.exportFile(), "Экспорт в xls"]]
                 
                     BoxLayout:
                         id: boxResult
