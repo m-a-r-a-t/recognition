@@ -20,6 +20,9 @@ from gpzu_parser.gpzu_parser import GPZU_parser
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.list import OneLineListItem
 from app.db.model import *
+from plyer import filechooser
+from uuid import *
+from kivy.properties import ListProperty
 
 
 
@@ -32,17 +35,24 @@ Window.size = (720, 1024)
 class ScreenManagement(ScreenManager):
     pass
 
+
+# pages (screen)
 class PageUploadFile(Screen):
     pass
     
 class PageAllFile(Screen):
     pass
 
-
 class PageResult(Screen):
     pass
 
+class PageExportExcel(Screen):
+    pass
 
+
+
+
+# sidebar content
 class ContentNavigationDrawer(MDBoxLayout):
     pass
 
@@ -63,8 +73,8 @@ class MyBox(BoxLayout):
 class MyApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.arrayPath=[]
-        self.errorFile=[]
+        self.arrayPath=[] 
+        self.errorFile=[] 
         self.db = USE_DB()
         Window.bind(on_keyboard=self.events)
         self.manager_open = False
@@ -76,8 +86,11 @@ class MyApp(MDApp):
 
     def build(self):
         return Builder.load_file('my.kv')
-    
+
+    # Файл менеджер
+
     def file_manager_open(self):
+        self.arrayExport = []
         self.errorFile = []
         self.arrayPath = []
         self.file_manager.show('/')  
@@ -87,14 +100,12 @@ class MyApp(MDApp):
         self.arrayPath = path
         print(path)
        
-
     def exit_manager(self, *args):
         self.manager_open = False
         self.file_manager.close()
         print(self.arrayPath)
         self.afterExitManagerFile()
          
-
     def afterExitManagerFile(self):
         for i in range(len(self.arrayPath)):
             self.file_name = self.arrayPath[i].split('/')[len(self.arrayPath[i].split('/'))-1]
@@ -110,33 +121,18 @@ class MyApp(MDApp):
         self.edit_arrayPath_of_error()
 
 
-    def edit_arrayPath_of_error(self):
-        for i in range(len(self.errorFile)):
-            self.arrayPath.remove(self.errorFile[i])
-        self.saveFileInDb()
-
-
-    def result_page_exit_callbak(self, name_page = 'PageAllFile'):
-        self.openPageAllFile()
-        self.root.ids.manager.current = name_page
-
-
-    def openPageResultAfterUpload(self):
-        self.openPageResult(self.getTableResult())
-        self.root.ids.manager.current = 'PageResult'
-
-    
+    #Database 
 
     def useDbInAllFilePage(self):
         resultData = self.db.getAllFilesWithResults()
         return resultData
-      
+
     def saveFileInDb(self):
         files = []
         db2 = USE_DB()
         p = GPZU_parser(files_paths=self.arrayPath)
         data = p.parse()
-        print(data)
+        # print(data)
         
         for file_path,result in data.items():
             file = File(file_path, result)
@@ -144,107 +140,31 @@ class MyApp(MDApp):
         
         db2.insertElementFile(files)
 
-
-    def getTableToResultAfterUpload(self):
-        listColumn = []
-        rowData = []
-        arrayLocalFileID = []
-        data = self.db.getAllFilesWithResults()
-        for file in data: 
-            for i in range(len(self.arrayPath)):
-                if(self.arrayPath[i] == file.path):
-                    arrayLocalFileID.append[file.id]
-        
-
-        for i in range(len(arrayLocalFileID)):
-            data = self.db.getOneFileById(arrayLocalFileID[i])
-            dataKeys = data.result.keys()
-            nameColumn = list(dataKeys)
-            if len(listColumn) == 0:
-                for j in range(len(nameColumn)):
-                    listColumn.append((nameColumn[j], dp(100)))
-
-          
-            row = []
-            for g in range(len(nameColumn)):
-                row.append(data.result.get(nameColumn[g]))
-            rowData.append(tuple(row))
-        
-        print(listColumn)
-        print(rowData)
-        
-        data_tables = MDDataTable(
-            rows_num=100,
-            use_pagination=True,
-            column_data=listColumn,
-            row_data=rowData,
-            # sorted_on="Schedule",
-            sorted_order="ASC",
-            elevation=2,
-        )
-        return data_tables
-      
-                
-    def getTableToResultOnPressItemALLFile(self, id):
-        data = self.db.getOneFileById(id)
-        listColumn = []
-        rowData = []
-        dataKeys = data.result.keys()
-        nameColumn = list(dataKeys)
-        if len(listColumn) == 0:
-                for j in range(len(nameColumn)):
-                    listColumn.append((nameColumn[j], dp(100)))
-        row = []
-        for g in range(len(nameColumn)):
-            row.append(data.result.get(nameColumn[g]))
-        rowData.append(tuple(row))
-
-        data_tables = MDDataTable(
-            rows_num=100,
-            use_pagination=True,
-            column_data=listColumn,
-            row_data=rowData,
-            # sorted_on="Schedule",
-            sorted_order="ASC",
-            elevation=2,
-        )
-        return data_tables
-
-      
-    def getTableResult(self):
-        listColumn = []
-        rowData = []
-        
-        for i in range(len(self.arrayPath)):
-            p = GPZU_parser(files_paths=[self.arrayPath[i]])
-            data = p.parse()
-            dataKeys = data.keys()
-            nameColumn = list(data.get(list(dataKeys)[0]).keys())
-            if len(listColumn) == 0:
-                for j in range(len(nameColumn)):
-                    listColumn.append((nameColumn[j], dp(100)))
-            
-            for g in range(len(data)):
-                row = [self.arrayPath[i].split('/')[len(self.arrayPath[i].split('/'))-1], list(dataKeys)[g]]
-                for c in range(len(nameColumn)-2):
-                    row.append(data.get(list(dataKeys)[g]).get(nameColumn[c+2]))
-                rowData.append(tuple(row))
-                break
-            
-
-        data_tables = MDDataTable(
-            rows_num=100,
-            use_pagination=True,
-            column_data=listColumn,
-            row_data=rowData,
-            # sorted_on="Schedule",
-            sorted_order="ASC",
-            elevation=2,
-        )
-        return data_tables
+    # Subprocces after load pages and callbacks
+    def callbackOpenPageExport(self):
+        self.root.ids.manager.current = 'PageExport'
 
 
+    def edit_arrayPath_of_error(self):
+        for i in range(len(self.errorFile)):
+            self.arrayPath.remove(self.errorFile[i])
+        self.saveFileInDb()
 
+    def callbackPressOnAllFileItem(self, instance):
+        self.openPageResult(self.getTableToResultOnPressItemALLFile(instance.id))
+        self.root.ids.manager.current = 'PageResult'
+        data = self.db.getOneFileById(instance.id)
+        self.arrayExport = [data.path]
+
+    def result_page_exit_callbak(self, name_page = 'PageAllFile'):
+        self.openPageAllFile()
+        self.root.ids.manager.current = name_page
+
+    def openPageResultAfterUpload(self):
+        self.openPageResult(self.getTableResult())
+        self.root.ids.manager.current = 'PageResult'
+        self.arrayExport = self.arrayPath
+    
     def openPageAllFile(self):
         self.root.ids.containerAllFileList.clear_widgets()
         files = self.useDbInAllFilePage()
@@ -263,12 +183,99 @@ class MyApp(MDApp):
 
 
 
-    def callbackPressOnAllFileItem(self, instance):
-        self.openPageResult(self.getTableToResultOnPressItemALLFile(instance.id))
-        self.root.ids.manager.current = 'PageResult'
-       
+    # Create tables result
+    def getTableToResultAfterUpload(self):
+        listColumn = []
+        rowData = []
+        arrayLocalFileID = []
+        data = self.db.getAllFilesWithResults()
+        for file in data: 
+            for i in range(len(self.arrayPath)):
+                if(self.arrayPath[i] == file.path):
+                    arrayLocalFileID.append[file.id]
         
-    
+        for i in range(len(arrayLocalFileID)):
+            data = self.db.getOneFileById(arrayLocalFileID[i])
+            dataKeys = data.result.keys()
+            nameColumn = list(dataKeys)
+            if len(listColumn) == 0:
+                for j in range(len(nameColumn)):
+                    listColumn.append((nameColumn[j], dp(150)))
+
+            row = []
+            for g in range(len(nameColumn)):
+                row.append(data.result.get(nameColumn[g]))
+            rowData.append(tuple(row))
+        
+        print(listColumn)
+        print(rowData)
+        
+        data_tables = MDDataTable(
+            rows_num=100,
+            use_pagination=True,
+            column_data=listColumn,
+            row_data=rowData,
+            # sorted_on="Schedule",
+            sorted_order="ASC",
+            elevation=2,
+        )
+        return data_tables
+            
+    def getTableToResultOnPressItemALLFile(self, id):
+        data = self.db.getOneFileById(id)
+        listColumn = []
+        rowData = []
+        dataKeys = data.result.keys()
+        nameColumn = list(dataKeys)
+        if len(listColumn) == 0:
+                for j in range(len(nameColumn)):
+                    listColumn.append((nameColumn[j], dp(150)))
+        row = []
+        for g in range(len(nameColumn)):
+            row.append(data.result.get(nameColumn[g]))
+        rowData.append(tuple(row))
+
+        data_tables = MDDataTable(
+            rows_num=100,
+            use_pagination=True,
+            column_data=listColumn,
+            row_data=rowData,
+            # sorted_on="Schedule",
+            sorted_order="ASC",
+            elevation=2,
+        )
+        return data_tables
+
+    def getTableResult(self):
+        listColumn = []
+        rowData = []
+        
+        for i in range(len(self.arrayPath)):
+            p = GPZU_parser(files_paths=[self.arrayPath[i]])
+            data = p.parse()
+            dataKeys = data.keys()
+            nameColumn = list(data.get(list(dataKeys)[0]).keys())
+            if len(listColumn) == 0:
+                for j in range(len(nameColumn)):
+                    listColumn.append((nameColumn[j], dp(150)))
+            
+            for g in range(len(data)):
+                row = [self.arrayPath[i].split('/')[len(self.arrayPath[i].split('/'))-1], list(dataKeys)[g]]
+                for c in range(len(nameColumn)-2):
+                    row.append(data.get(list(dataKeys)[g]).get(nameColumn[c+2]))
+                rowData.append(tuple(row))
+                break
+            
+        data_tables = MDDataTable(
+            rows_num=100,
+            use_pagination=True,
+            column_data=listColumn,
+            row_data=rowData,
+            # sorted_on="Schedule",
+            sorted_order="ASC",
+            elevation=2,
+        )
+        return data_tables    
     
     def openPageResult(self, data_table):
         self.root.ids.boxResult.clear_widgets()
@@ -283,14 +290,21 @@ class MyApp(MDApp):
         scroll.add_widget(box)
         base.add_widget(scroll)
         self.root.ids.boxResult.add_widget(base)
+ 
 
-
+    def exportFile(self):
+        exp = GPZU_parser(files_paths=self.arrayExport)
+        exp.parse()
+        folder_path = filechooser.choose_dir()
+        exp.to_excel(str(folder_path[0]), "file_"+str(uuid.uuid4()))
+        self.arrayExport = []
+      
 
     def events(self, instance, keyboard, keycode, text, modifiers):
         if keyboard in (1001, 27):
             if self.manager_open:
-                self.file_manager.back()
+                self.file_manager.back(on_selection=self.handle_selection)
         return True
-
+    
 
 MyApp().run()

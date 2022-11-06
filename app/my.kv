@@ -91,22 +91,31 @@ Screen:
                         elevation: 0
                         left_action_items: [["arrow-left", lambda x: app.result_page_exit_callbak()]]
                         right_action_items:
-                            [['export', lambda x: app.callback(x), "Экспорт в xls"]]
+                            [['export', lambda x: app.exportFile(), "Экспорт в xls"]]
                 
-                
-
                     BoxLayout:
                         id: boxResult
                         orientation: "vertical"
                         size_hint: 1, 0.9
+            
+
+            PageExportExcel:
+                name: "PageExport"
+                id: PageExport
+                
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    size_hint: (1, 1)
+
+                    MDTopAppBar:
+                        
+                        title: "Экспорт"
+                        elevation: 0
+                        left_action_items: [["arrow-left", lambda x: app.result_page_exit_callbak()]]
                     
 
-
-                
-
-
-
-
+                    BoxLayout:
+                        orientation: "vertical"
 
 
         MDNavigationDrawer:
