@@ -215,6 +215,7 @@ class GPZU_parser:
         i = 0
         # self.results = {}
         for path in self.files_paths:
+            self.results[path] = {}
             with fitz.open(path) as doc:
                 text = ""
                 html = ""
@@ -231,11 +232,11 @@ class GPZU_parser:
                     if len(zu_names) > 0:
                         for zu_name in zu_names:
                             i += 1
-                            self.results[now_number+zu_name] = self.__parse_pdf(text, zu_names, zu_keys, zu_name=zu_name)
+                            self.results[path][now_number+zu_name] = self.__parse_pdf(text, zu_names, zu_keys, zu_name=zu_name)
                         else:
                             i += 1
-                            self.results[now_number] = self.__parse_pdf(text)
-                        self.results[now_number]['№ п/п'] = i
+                            self.results[path][now_number] = self.__parse_pdf(text)
+                        self.results[path][now_number]['№ п/п'] = i
 
         return self.results
 

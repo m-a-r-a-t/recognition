@@ -5,10 +5,10 @@ import json
 
 
 class File:
-    def __init__(self, path,  result, id=0,  date='',):
+    def __init__(self, path, name,  result, id=0,  date='',):
         self.id = id
         self.path = path
-        self.name = path.split('/')[len(path.split('/'))-1]
+        self.name = name
         self.date = date
 
         self.result = result
@@ -53,13 +53,13 @@ class USE_DB:
         cur = self.__conn.cursor()
         cur.execute("SELECT * FROM files")
         data = [dict(row) for row in cur.fetchall()]
-        return [File(path=d["path"], result=json.loads(d["data"]), id=d["id"], date=d["date"]) for d in data]
+        return [File(path=d["path"],name=d["name"], result=json.loads(d["data"]), id=d["id"], date=d["date"]) for d in data]
 
     def getOneFileById(self, idd: int):
         cur = self.__conn.cursor()
         cur.execute("SELECT * FROM files WHERE id=?", (idd,))
         data = dict(cur.fetchone())
-        return File(path=data["path"], result=json.loads(data["data"]), id=data["id"], date=data["date"])
+        return File(path=data["path"],name=d["name"], result=json.loads(data["data"]), id=data["id"], date=data["date"])
 
 
 # if __name__ == "__main__":

@@ -131,9 +131,11 @@ class MyApp(MDApp):
         data = p.parse()
         # print(data)
         
-        for file_path,result in data.items():
-            file = File(file_path, result)
-            files.append(file)
+        for file_path,_ in data.items():
+            for name,result in data[file_path].items():
+                print(file_path,name)
+                file = File(file_path,name,result)
+                files.append(file)
         
         db2.insertElementFile(files)
 
