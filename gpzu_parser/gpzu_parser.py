@@ -224,18 +224,18 @@ class GPZU_parser:
 
                 now_number = self.__parse_number(text)
 
-                self.results[path] = self.__parse_pdf(text)
+                # self.results[path] = self.__parse_pdf(text)
 #
-                # if now_number:
-                #     zu_names, zu_keys = self.__parse_count(text)
-                #     if len(zu_names) > 0:
-                #         for zu_name in zu_names:
-                #             i += 1
-                #             self.results[now_number+zu_name] = self.__parse_pdf(text, zu_names, zu_keys, zu_name=zu_name)
-                #         else:
-                #             i += 1
-                #             self.results[now_number] = self.__parse_pdf(text)
-                #         self.results[now_number]['№ п/п'] = i
+                if now_number:
+                    zu_names, zu_keys = self.__parse_count(text)
+                    if len(zu_names) > 0:
+                        for zu_name in zu_names:
+                            i += 1
+                            self.results[now_number+zu_name] = self.__parse_pdf(text, zu_names, zu_keys, zu_name=zu_name)
+                        else:
+                            i += 1
+                            self.results[now_number] = self.__parse_pdf(text)
+                        self.results[now_number]['№ п/п'] = i
 
         return self.results
 
