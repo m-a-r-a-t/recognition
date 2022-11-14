@@ -95,13 +95,18 @@ class MyApp(MDApp):
 
     def select_path(self, path):
         self.arrayPath = path
+        self.manager_open = False
+        self.file_manager.close()
+        print(self.arrayPath)
+        self.afterExitManagerFile()
         print(path)
        
     def exit_manager(self, *args):
         self.manager_open = False
         self.file_manager.close()
         print(self.arrayPath)
-        self.afterExitManagerFile()
+    
+    
          
     def afterExitManagerFile(self):
         for i in range(len(self.arrayPath)):
