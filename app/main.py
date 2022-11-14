@@ -26,6 +26,154 @@ from kivy.properties import ListProperty
 
 
 
+
+ui = """
+Screen:
+    MDNavigationLayout:
+
+        ScreenManager:
+            id: manager
+            name: "Manager"
+            
+            PageUploadFile:
+                name: "PageUploadFile"
+                id: PageUploadFileScreen
+
+                MDBoxLayout:
+                    orientation: 'vertical'
+
+                    MDTopAppBar:
+                        
+                        title: "Загрузить файлы"
+                        elevation: 0
+                        left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
+                    
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: None
+
+
+                        MDRoundFlatIconButton:
+                            text: "Выбрать файлы"
+                            icon: "folder"
+                            pos_hint: {'left': 0.3}
+                        
+                            on_release: app.file_manager_open()
+                        
+                        MDRoundFlatIconButton:
+                            pos_y: "100"
+                            text: "Результат"
+                            icon: "file"
+                            pos_hint: {'left': 0.6}
+                            on_release: manager.current='PageResult' 
+                            on_release: app.openPageResultAfterUpload()
+                          
+                    
+                    BoxLayout: 
+                        orientation: 'vertical'
+    
+                        ScrollView:
+                            MDList:
+                                id: pathUploadFileList
+                    
+                  
+
+
+            PageAllFile:
+                name: "PageAllFile"
+                id: PageAllFileScreen
+
+                MDBoxLayout:
+                    orientation: 'vertical'
+
+                    MDTopAppBar:
+                       
+                        title: "Все файлы"
+                        elevation: 0
+                        left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
+                    
+                    MDBoxLayout: 
+                        orientation: 'vertical'
+    
+                        ScrollView:
+                            MDList:
+                                id: containerAllFileList
+                    
+
+                           
+
+            
+
+
+            PageResult:
+                name: "PageResult"
+                id: PageResult
+
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    size_hint: (1, 1)
+
+                    MDTopAppBar:
+                        
+                        title: "Результат"
+                        elevation: 0
+                        left_action_items: [["arrow-left", lambda x: app.result_page_exit_callbak()]]
+                        right_action_items:
+                            [['export', lambda x: app.exportFile(), "Экспорт в xls"]]
+                
+                    BoxLayout:
+                        id: boxResult
+                        orientation: "vertical"
+                        size_hint: 1, 0.9
+            
+
+            PageExportExcel:
+                name: "PageExport"
+                id: PageExport
+                
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    size_hint: (1, 1)
+
+                    MDTopAppBar:
+                        
+                        title: "Экспорт"
+                        elevation: 0
+                        left_action_items: [["arrow-left", lambda x: app.result_page_exit_callbak()]]
+                    
+
+                    BoxLayout:
+                        orientation: "vertical"
+
+
+        MDNavigationDrawer:
+            id: nav_drawer
+
+            ContentNavigationDrawer:
+                spacing: '8dp'
+                padding: '8dp'
+                orientation: "vertical"
+                
+                MDLabel: 
+                    text: "Меню"
+                    size_hint_y: None
+
+                Button:
+                    text: "Загрузить файлы"
+                    size_hint: 0.9, 0.05
+                    on_release: manager.current='PageUploadFile'
+                
+                Button:
+                    text: "Все файлы"
+                    size_hint: 0.9, 0.05
+                    on_release: app.openPageAllFile()
+                    on_release: manager.current='PageAllFile'
+                
+                ScrollView:
+"""
+
+
+
 Window.size = (720, 1024)
 
 
@@ -82,7 +230,8 @@ class MyApp(MDApp):
         )
 
     def build(self):
-        return Builder.load_file('my.kv')
+        return Builder.load_string(ui)
+       
 
     # Файл менеджер
 
@@ -97,14 +246,13 @@ class MyApp(MDApp):
         self.arrayPath = path
         self.manager_open = False
         self.file_manager.close()
-        print(self.arrayPath)
         self.afterExitManagerFile()
-        print(path)
+       
        
     def exit_manager(self, *args):
         self.manager_open = False
         self.file_manager.close()
-        print(self.arrayPath)
+        
     
     
          
@@ -134,15 +282,14 @@ class MyApp(MDApp):
         db2 = USE_DB()
         p = GPZU_parser(files_paths=self.arrayPath)
         data = p.parse()
-        # print(data)
+    
         
         for file_path,_ in data.items():
             for name,result in data[file_path].items():
-                print(file_path,name)
                 file = File(file_path,name,result)
                 files.append(file)
         
-        print(db2.insertElementFile(files))
+        db2.insertElementFile(files)
 
     # Subprocces after load pages and callbacks
     def callbackOpenPageExport(self):

@@ -233,9 +233,9 @@ class GPZU_parser:
                         for zu_name in zu_names:
                             i += 1
                             self.results[path][now_number+zu_name] = self.__parse_pdf(text, zu_names, zu_keys, zu_name=zu_name)
-                        else:
-                            i += 1
-                            self.results[path][now_number] = self.__parse_pdf(text)
+                    else:
+                        i += 1
+                        self.results[path][now_number] = self.__parse_pdf(text)
                         self.results[path][now_number]['№ п/п'] = i
 
         return self.results
