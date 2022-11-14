@@ -207,13 +207,13 @@ class GPZU_parser:
                 this['Высота застройки, м'] = trash['zu'].split('Количество этажей: ')[1].split(';')[0]
             except IndexError:
                 pass
-
+       
         return this
-    # pd.DataFrame(this, index=[doc.name])
+        
 
     def parse(self) -> dict:
         i = 0
-        # self.results = {}
+        self.results = {}
         for path in self.files_paths:
             self.results[path] = {}
             with fitz.open(path) as doc:
@@ -225,7 +225,7 @@ class GPZU_parser:
 
                 now_number = self.__parse_number(text)
 
-                # self.results[path] = self.__parse_pdf(text)
+               
 #
                 if now_number:
                     zu_names, zu_keys = self.__parse_count(text)
