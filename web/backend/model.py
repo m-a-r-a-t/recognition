@@ -64,6 +64,13 @@ class USE_DB:
         data = dict(cur.fetchone())
         return File(path=data["path"], name=data["name"], result=json.loads(data["data"]), id=data["id"], date=data["date"])
 
+    def getFilesByIds(self, ids: List[int]):
+        cur = self.__conn.cursor()
+        cur.execute(f"SELECT * FROM files WHERE id in ({','.join(['?'] * len(ids))})", ids)
+
+        data = [dict(row) for row in cur.fetchall()]
+        return [File(path=d["path"], name=d["name"], result=json.loads(d["data"]), id=d["id"], date=d["date"]) for d in data]
+
 
 # if __name__ == "__main__":
 #     db = USE_DB()
