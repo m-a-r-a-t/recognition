@@ -8,16 +8,16 @@
   </head>
   <body>
     <h1>Hello world</h1>
-    <button id="file-selector" />
+    <button id="file-selector">Send</button>
   </body>
 
   <script>
-    let socket = new WebSocket('ws:/127.0.0.1:3000/ws')
+    let socket = new WebSocket('ws:/localhost:8000/ws')
 
     socket.onopen = function (e) {
       console.log('[open] Соединение установлено')
       console.log('Отправляем данные на сервер')
-      socket.send('Меня зовут Джон')
+      // socket.send('Меня зовут Джон')
     }
 
     socket.onmessage = function (event) {
@@ -40,7 +40,7 @@
 
     let btn = document.getElementById('file-selector')
     btn.onclick = (e) => {
-      socket.send('fdfd')
+      socket.send(JSON.stringify({ type: 'open_file_manager' }))
     }
   </script>
 </html>

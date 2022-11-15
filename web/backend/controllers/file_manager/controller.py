@@ -9,13 +9,17 @@ router = APIRouter()
 @router.websocket("/ws")
 async def open_file_manager(ws: WebSocket):
     await ws.accept()
-    print("fdsfsdf")
+
     file_manager_service = File_manager_service(ws)
     while True:
         try:
-            data = await ws.receive_text()
-            file_manager_service.open_file_manager()
-            await ws.send_text(f"Message text was: {data}")
+            data = await ws.receive_json()
+            print(data)
+            if data["type"] == "open_file_manager":
+                print("===============================", data)
+                file_manager_service.open_file_manager()
+            # await ws.send_text(f"Message text was: {data}")
         except Exception as e:
-            await ws.close()
-            print(e)
+            print("Websocket closed", e)
+            # await ws.close()
+            break

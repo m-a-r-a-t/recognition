@@ -34,7 +34,7 @@ app.mount("/", StaticFiles(directory="web/backend/public", html=True), name="sta
 def serve():
     """Serve the web application."""
     # webbrowser.open('http://127.0.0.1:8000', new=2)
-    uvicorn.run(app, port=3000)
+    uvicorn.run(app)
 
 
 if __name__ == "__main__":
