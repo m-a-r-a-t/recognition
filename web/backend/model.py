@@ -36,12 +36,13 @@ class USE_DB:
             print("[INFO]", e)
 
     def insertElementFile(self, files: List[File]):
+        ids = []
         cur = self.__conn.cursor()
         cur.execute("begin")
         try:
             for file in files:
                 cur.execute("INSERT INTO files (path,name,data) VALUES(?,?,?)", (file.path, file.name, json.dumps(file.result)))
-
+                ids.append(cur.lastrowid)
             cur.execute("commit")
         except Exception as e:
             cur.execute("rollback")
@@ -49,17 +50,19 @@ class USE_DB:
         finally:
             cur.close()
 
+        return ids
+
     def getAllFilesWithResults(self,):
         cur = self.__conn.cursor()
         cur.execute("SELECT * FROM files")
         data = [dict(row) for row in cur.fetchall()]
-        return [File(path=d["path"],name=d["name"], result=json.loads(d["data"]), id=d["id"], date=d["date"]) for d in data]
+        return [File(path=d["path"], name=d["name"], result=json.loads(d["data"]), id=d["id"], date=d["date"]) for d in data]
 
     def getOneFileById(self, idd: int):
         cur = self.__conn.cursor()
         cur.execute("SELECT * FROM files WHERE id=?", (idd,))
         data = dict(cur.fetchone())
-        return File(path=data["path"],name=data["name"], result=json.loads(data["data"]), id=data["id"], date=data["date"])
+        return File(path=data["path"], name=data["name"], result=json.loads(data["data"]), id=data["id"], date=data["date"])
 
 
 # if __name__ == "__main__":

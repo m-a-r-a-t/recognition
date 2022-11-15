@@ -6,12 +6,10 @@ from web.backend.model import USE_DB, File
 
 class Gpzu_Service:
     def __init__(self) -> None:
-        # self.db = USE_DB()
         pass
 
-    def set_gpzus(self, paths: List[str]):
+    def calc_and_save_gpzus(self, paths: List[str]):
         files = []
-        db2 = USE_DB()
         p = GPZU_parser(files_paths=paths)
         data = p.parse()
 
@@ -20,7 +18,10 @@ class Gpzu_Service:
                 file = File(file_path, name, result)
                 files.append(file)
 
-        USE_DB().insertElementFile(files)
+        try:
+            return USE_DB().insertElementFile(files)
+        except Exception as e:
+            raise e
 
     def get_all_gpzus(self,):
         result = USE_DB().getAllFilesWithResults()

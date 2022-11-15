@@ -8,8 +8,14 @@ class File_manager_service:
     def __init__(self, ws) -> None:
         self.ws = ws
 
-    def open_file_manager(self):
-        self.__run_file_manager()
+    async def open_file_manager(self):
+        root = Tk()
+        root.withdraw()
+        files = filedialog.askopenfilenames()
+        root.destroy()
+        print(files)
+        await self.ws.send_json(files)
+        #! self.__run_file_manager()
 
     def __run_file_manager(self,):
 

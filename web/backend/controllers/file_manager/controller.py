@@ -17,7 +17,7 @@ async def open_file_manager(ws: WebSocket):
             print(data)
             if data["type"] == "open_file_manager":
                 print("===============================", data)
-                file_manager_service.open_file_manager()
+                await file_manager_service.open_file_manager()
             # await ws.send_text(f"Message text was: {data}")
         except Exception as e:
             print("Websocket closed", e)
