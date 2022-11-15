@@ -2,8 +2,13 @@ import { Button, Drawer, Tooltip } from "antd"
 import React, { useState } from "react"
 import { MenuOutlined } from "@ant-design/icons"
 import { Link } from "react-router-dom"
+import { useAppDispatch, useAppSelector } from "../../hook/redux"
+import { mainSlice } from "../../store/reducers/MainSlice"
 
 function Navigation() {
+  const dispatch = useAppDispatch()
+  const { setAllFileSelect } = mainSlice.actions
+
   const [open, setOpen] = useState(false)
 
   const showDrawer = () => {
@@ -16,7 +21,7 @@ function Navigation() {
 
   return (
     <div className="ml-[20px]">
-      <Tooltip title="search">
+      <Tooltip title="menu">
         <Button
           shape="circle"
           icon={<MenuOutlined />}
@@ -33,12 +38,27 @@ function Navigation() {
         key={"left"}
       >
         <Link to="/allfile/">
-          <Button type="primary" className="w-full bg-black">
+          <Button
+            type="primary"
+            className="w-full text-black border-black"
+            onClick={() => {
+              dispatch(setAllFileSelect([]))
+            }}
+          >
             Все файлы
           </Button>
         </Link>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <Link to="/">
+          <Button
+            type="primary"
+            className="w-full text-black mt-[20px] border-black"
+            onClick={() => {
+              dispatch(setAllFileSelect([]))
+            }}
+          >
+            Загрузить файлы
+          </Button>
+        </Link>
       </Drawer>
     </div>
   )
