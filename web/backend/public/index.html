@@ -8,14 +8,39 @@
   </head>
   <body>
     <h1>Hello world</h1>
+    <button id="file-selector" />
   </body>
 
   <script>
-    async function hello() {
-      let promise = await fetch('/hello')
-      let data = await promise.json()
-      console.log(data)
+    let socket = new WebSocket('ws:/127.0.0.1:3000/ws')
+
+    socket.onopen = function (e) {
+      console.log('[open] Соединение установлено')
+      console.log('Отправляем данные на сервер')
+      socket.send('Меня зовут Джон')
     }
-    hello()
+
+    socket.onmessage = function (event) {
+      console.log(`[message] Данные получены с сервера: ${event.data}`)
+    }
+
+    socket.onclose = function (event) {
+      if (event.wasClean) {
+        console.log(`[close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}`)
+      } else {
+        // например, сервер убил процесс или сеть недоступна
+        // обычно в этом случае event.code 1006
+        console.log('[close] Соединение прервано')
+      }
+    }
+
+    socket.onerror = function (error) {
+      console.log(`[error]`)
+    }
+
+    let btn = document.getElementById('file-selector')
+    btn.onclick = (e) => {
+      socket.send('fdfd')
+    }
   </script>
 </html>
