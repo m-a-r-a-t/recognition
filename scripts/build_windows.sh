@@ -2,7 +2,9 @@ source ./env/Scripts/activate
 cp -r gpzu_parser web/backend
 cd web/backend/
 pyinstaller app.py --onefile
-mkdir dist/public
+cd dist
+mkdir public
+cd ..
 cd ../frontend
 npm run build
 cd build

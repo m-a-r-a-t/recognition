@@ -3,7 +3,7 @@ from gpzu_parser.gpzu_parser import GPZU_parser
 import pandas as pd
 from model import USE_DB, File
 from tkinter import Tk, filedialog
-
+import os
 
 class Gpzu_Service:
     def __init__(self) -> None:
@@ -40,8 +40,12 @@ class Gpzu_Service:
             # df['Уникальный номер записи'] = df.index
             # df.index = np.arange(1, len(df) + 1)
             root = Tk()
+            root.attributes("-topmost", True)
             root.withdraw()
-            file_path_to_save = filedialog.asksaveasfilename(filetypes=[('Excel', '.xlsx')])
+            file_path_to_save = filedialog.asksaveasfilename(parent=root,filetypes=[('Excel', '.xlsx')])
+            if os.name == 'nt':
+                file_path_to_save += '.xlsx'
+            print(os.name,file_path_to_save)
             if file_path_to_save == "":
                 return
             # print(file_path_to_save)

@@ -10,8 +10,9 @@ class File_manager_service:
 
     async def open_file_manager(self):
         root = Tk()
+        root.attributes("-topmost", True)
         root.withdraw()
-        files = filedialog.askopenfilenames()
+        files = filedialog.askopenfilenames(parent=root)
         root.destroy()
         print(files)
         await self.ws.send_json(files)
