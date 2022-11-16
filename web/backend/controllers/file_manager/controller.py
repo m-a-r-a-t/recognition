@@ -1,8 +1,8 @@
 from typing import List
 from fastapi import APIRouter, WebSocket
 from pydantic import StrictStr
-from web.backend.loader import file_manager_service
-from web.backend.services.file_manager_service import File_manager_service
+from loader import file_manager_service
+from services.file_manager_service import File_manager_service
 router = APIRouter()
 
 

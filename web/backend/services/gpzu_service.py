@@ -1,7 +1,7 @@
 from typing import List
 from gpzu_parser.gpzu_parser import GPZU_parser
 import pandas as pd
-from web.backend.model import USE_DB, File
+from model import USE_DB, File
 from tkinter import Tk, filedialog
 
 
